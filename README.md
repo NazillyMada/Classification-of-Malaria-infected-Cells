@@ -1,3 +1,82 @@
+# 2 CNN Models for Classification Malaria-infected Cells Using Tensorflow Keras
+
+## The Datasets
+#### Context
+The Datasets is provided [here](https://lhncbc.nlm.nih.gov/publication/pub9932), alongside with [this Publication](https://peerj.com/articles/4568/#).
+And also can be found in [kaggle.com](https://www.kaggle.com/iarunava/cell-images-for-detecting-malaria). 
+This Datasets contains 2 classes, 'Parasitized' & 'Uninfected'. Each class have 13779 images of cell in various sizes.
+
+More information of this datasets can be found on the links that provided.
+
+
+## Prefix
+The process of this research is carried out by utilizing Google Collaboratory and using the Tensorflow-Keras library of python
+
+### Preparing data
+```markdown 
+%cd '/content/drive/My Drive/Colab_Notebooks/'
+
+!unzip 'cell_images.zip'
+```
+Extract Data from archive file. Unzip the Datasets to a folder in Drive
+
+### Import all needed Library
+```markdown
+import cv2
+import matplotlib.pyplot as plt 
+import os
+import tensorflow as tf
+import numpy as np
+import datetime
+import itertools
+from tensorflow.keras.preprocessing import image
+from keras.preprocessing.image import img_to_array
+from keras.preprocessing.image import load_img
+from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Activation, BatchNormalization, Dropout
+from tensorflow.keras.optimizers import Adam,SGD
+from keras.callbacks import ModelCheckpoint,EarlyStopping
+from tensorflow.keras.callbacks import TensorBoard
+from keras.models import load_model
+from sklearn.metrics import confusion_matrix,classification_report,f1_score, precision_score, recall_score
+```
+Here we are imported some important library to our script. such us Matplotlib, Opencv-python, Numpy, Keras, Tensorflow and Scikit-learn
+
+### Load The Datasets
+```markdown
+parasitized = os.listdir('/content/drive/My Drive/Colab_Notebooks/cell_images/Parasitized/')
+print(parasitized[:5])
+
+uninfected = os.listdir('/content/drive/My Drive/Colab_Notebooks/cell_images/Uninfected/')
+print(uninfected[:5])
+```
+We have 2 classes of images that separated into 2 folders, 'parasitized' and 'uninfected'
+
+```markdown
+plt.figure(figsize = (20,20))
+for i in range(10):
+    plt.subplot(2, 5, i+1)
+    img = cv2.imread('/content/drive/My Drive/Colab_Notebooks/cell_images/Parasitized' + "/" + parasitized[i])
+    plt.imshow(img)
+    plt.title('PARASITIZED : 1')
+    plt.tight_layout()
+plt.show()
+
+plt.figure(figsize = (20,20))
+for i in range(10):
+    plt.subplot(2, 5, i+1)
+    img = cv2.imread('/content/drive/My Drive/Colab_Notebooks/cell_images/Uninfected' + "/" + uninfected[i])
+    plt.imshow(img)
+    plt.title('UNINFECTED : 0')
+    plt.tight_layout()
+plt.show()
+```
+Then, we can visualized some sample data that we use
+
+
+
+
 
 
 
