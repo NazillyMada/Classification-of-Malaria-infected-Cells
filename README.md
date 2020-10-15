@@ -74,6 +74,10 @@ plt.show()
 ```
 Then, we can visualized some sample data that we use
 
+![Alt text](https://user-images.githubusercontent.com/64162824/96108524-e10f5c00-0f07-11eb-8306-aa66707905ba.PNG?raw=true "Sample of Parasitized Cells")
+
+![Alt text](https://user-images.githubusercontent.com/64162824/96108557-ea98c400-0f07-11eb-9326-6ffff699c96c.PNG?raw=true "Sample of Uninfected Cells")
+
 
 
 
