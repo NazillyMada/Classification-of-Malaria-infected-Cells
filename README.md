@@ -237,7 +237,7 @@ BatchNormalization Layer and Dropout is used in the end of every layers
 
 And have 3 Dense/Fully Connected Layer. 2 Dense layers contain 256 neurons with 'ReLU' activations, the last layer for classification contain 2 neurons with 'Softmax' acivations
 
-then, for Optimizer we use SGD with learing rate = 0.001 and momentum = 0.09
+then, for Optimizer we use SGD with learing rate = 0.001 and momentum = 0.9
 
 Below the summary of 'Complex CNN' architecture
 ```markdown
@@ -293,7 +293,7 @@ Total params: 1,569,058
 Trainable params: 1,568,354
 Non-trainable params: 704
 ```
-#### Train thr 'Complex CNN'
+##### Train the 'Complex CNN'
 ```markdown
 filepath='weights.h5'
 my_callbacks = [
@@ -301,7 +301,7 @@ my_callbacks = [
                 tf.keras.callbacks.ModelCheckpoint(filepath , monitor='val_accuracy',verbose=1,save_best_only=True),
 ]
 
-logdir = os.path.join("logs1", datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+logdir = os.path.join("logs", datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 my_callbacks.append(TensorBoard(logdir, histogram_freq=1))
 
 print(my_callbacks)
@@ -364,7 +364,7 @@ Epoch 00028: val_accuracy did not improve from 0.95936
 
 ![Alt text](https://user-images.githubusercontent.com/64162824/96118977-7f0a2300-0f16-11eb-8547-96a3d0a51641.PNG?raw=true "Epoch Loss")
 
-#### 'Complex CNN' Model Evaluation
+##### 'Complex CNN' Model Evaluation
 
 After training, evaluate our model with testing sets to figure out how well our model make predictions
 
@@ -374,17 +374,19 @@ model_ = load_model('/content/drive/My Drive/Colab_Notebooks/weights.h5')
 Before we perform evaluation, load the best model & weights from training
 
 ```markdown
+# Perform evaluation
 loss, accuracy = model_.evaluate(feature_test,label_test)
 f1score = f1_score(np.argmax(label_test, axis = 1), np.argmax(predictions, axis = 1), average="macro")
 precision = precision_score(np.argmax(label_test, axis = 1), np.argmax(predictions, axis = 1), average="macro")
 recall = recall_score(np.argmax(label_test, axis = 1), np.argmax(predictions, axis = 1), average="macro")
 
+# Result
 Loss : 0.0788116306066513 , Accuracy : 0.9735123515129089
 F1 Score : 0.9735122495379178
 Precision : 0.9735818698435521
 Recall : 0.9735556819498425
-
 ```
+
 **Confusion Matrix**
 
 ```markdown
@@ -419,88 +421,175 @@ plot_confusion_matrix(cm=cm, classes=cm_plot_labels,title='Confusion Matrix')
 
 ![Alt text](https://user-images.githubusercontent.com/64162824/96121318-1d4bb800-0f1a-11eb-985f-669072cd0925.PNG?raw=true "Confusion Matrix")
 
+We also using Confusion Matrix to see our prediction from each class
+
 If we see the prediction result of 'Complex CNN' model with the testing set, we can say that is pretty good !
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Welcome to GitHub Pages
-
-You can use the [editor on GitHub](https://github.com/NazillyMada/Classification-of-Malaria-infected-Cells/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+#### 'Simple CNN' Architecture
 
 ```markdown
-Syntax highlighted code block
+model = Sequential()
 
-# Header 1
-## Header 2
-### Header 3
+model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', input_shape = (44,44,3)))
+model.add(MaxPooling2D((2, 2)))
+model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform'))
+model.add(MaxPooling2D((2, 2)))
+model.add(BatchNormalization(axis=-1))
+model.add(Dropout(0.5))
 
-- Bulleted
-- List
+model.add(Flatten())
 
-1. Numbered
-2. List
+#fully-connected layer
+model.add(Dense(units=64, activation='relu', kernel_initializer='he_uniform'))
+model.add(Dense(units=128, activation='relu', kernel_initializer='he_uniform'))
+model.add(Dense(units=32, activation='relu', kernel_initializer='he_uniform'))
+model.add(Dense(units=2, activation='softmax'))
 
-**Bold** and _Italic_ and `Code` text
+opt = SGD(lr=0.001, momentum=0.9)
 
-[Link](url) and ![Image](src)
+model.summary()
 ```
+'Simple CNN' Model id made of 1 blocks Convolutional layers and 4 Dense Layer
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+'Simple CNN' consist of 2 Conv layer, 2 Sub-Sampling Layer (Max-Pooling) and BatchNormalization + Dropout Layer in the end
 
-### Jekyll Themes
+And have 4 Dense/ Fully-Connected Layer that consist of Dense_1 with 64 neurons, Dense_2 with 128 neurons, Dense_3 with 32 neurons, all using 'ReLU' activation.
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/NazillyMada/Classification-of-Malaria-infected-Cells/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+and Dense_4 for classification using 2 neurons with 'Softmaxt' activation
 
-### Support or Contact
+then, for Optimizer we use SGD with learing rate = 0.001 and momentum = 0.9
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+```markdown
+Model: "sequential_4"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_11 (Conv2D)           (None, 42, 42, 32)        896       
+_________________________________________________________________
+max_pooling2d_6 (MaxPooling2 (None, 21, 21, 32)        0         
+_________________________________________________________________
+conv2d_12 (Conv2D)           (None, 19, 19, 64)        18496     
+_________________________________________________________________
+max_pooling2d_7 (MaxPooling2 (None, 9, 9, 64)          0         
+_________________________________________________________________
+batch_normalization_5 (Batch (None, 9, 9, 64)          256       
+_________________________________________________________________
+dropout_5 (Dropout)          (None, 9, 9, 64)          0         
+_________________________________________________________________
+flatten_3 (Flatten)          (None, 5184)              0         
+_________________________________________________________________
+dense_12 (Dense)             (None, 64)                331840    
+_________________________________________________________________
+dense_13 (Dense)             (None, 128)               8320      
+_________________________________________________________________
+dense_14 (Dense)             (None, 32)                4128      
+_________________________________________________________________
+dense_15 (Dense)             (None, 2)                 66        
+=================================================================
+Total params: 364,002
+Trainable params: 363,874
+Non-trainable params: 128
+```
+#### Train 'Simple CNN'
+
+```markdown
+filepath='weights3.h5'
+my_callbacks = [
+                tf.keras.callbacks.EarlyStopping(monitor='val_accuracy',patience =10),
+                tf.keras.callbacks.ModelCheckpoint(filepath , monitor='val_accuracy',verbose=1,save_best_only=True),
+]
+
+logdir = os.path.join("logs1", datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+my_callbacks.append(TensorBoard(logdir, histogram_freq=1))
+
+print(my_callbacks)
+```
+Before we train the 'Complex CNN' models, we setting up some callbacks. Such us Checkpoint, EarlyStopping, and Tensorboard.
+
+Checkpoint used to save the model in several epoch with increased val_accuracy
+
+EarlyStopping used to stop the training if there is no improvement of val_accuracy from 10 epoch in a row
+
+TensorBoard is used to see the graphics of loss,accuracy,val_accuracy, val_loss during training process
+
+```markdown
+model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
+history = model.fit(feature_train,label_train, validation_data=(feature_test,label_test), callbacks = my_callbacks, epochs=100,verbose=1)
+```
+Then we can compile the model and fit for training.
+
+```markdown
+# 3 first epoch
+Epoch 1/100
+775/776 [============================>.] - ETA: 0s - loss: 0.6151 - accuracy: 0.6667
+Epoch 00001: val_accuracy improved from -inf to 0.72714, saving model to weights3.h5
+776/776 [==============================] - 68s 88ms/step - loss: 0.6151 - accuracy: 0.6668 - val_loss: 0.5474 - val_accuracy: 0.7271
+Epoch 2/100
+775/776 [============================>.] - ETA: 0s - loss: 0.5167 - accuracy: 0.7471
+Epoch 00002: val_accuracy did not improve from 0.72714
+776/776 [==============================] - 73s 95ms/step - loss: 0.5168 - accuracy: 0.7471 - val_loss: 0.7268 - val_accuracy: 0.6549
+Epoch 3/100
+775/776 [============================>.] - ETA: 0s - loss: 0.4029 - accuracy: 0.8145
+Epoch 00003: val_accuracy did not improve from 0.72714
+776/776 [==============================] - 65s 84ms/step - loss: 0.4029 - accuracy: 0.8145 - val_loss: 1.0150 - val_accuracy: 0.5334
+
+
+......
+
+# Best Epoch
+Epoch 25/100
+775/776 [============================>.] - ETA: 0s - loss: 0.0872 - accuracy: 0.9680
+Epoch 00025: val_accuracy improved from 0.95718 to 0.96154, saving model to weights3.h5
+776/776 [==============================] - 64s 82ms/step - loss: 0.0872 - accuracy: 0.9680 - val_loss: 0.1220 - val_accuracy: 0.9615
+
+
+# 3 last epoch
+Epoch 33/100
+775/776 [============================>.] - ETA: 0s - loss: 0.0630 - accuracy: 0.9771
+Epoch 00033: val_accuracy did not improve from 0.96154
+776/776 [==============================] - 65s 83ms/step - loss: 0.0629 - accuracy: 0.9771 - val_loss: 0.1467 - val_accuracy: 0.9550
+Epoch 34/100
+775/776 [============================>.] - ETA: 0s - loss: 0.0595 - accuracy: 0.9779
+Epoch 00034: val_accuracy did not improve from 0.96154
+776/776 [==============================] - 64s 83ms/step - loss: 0.0595 - accuracy: 0.9779 - val_loss: 0.1381 - val_accuracy: 0.9608
+Epoch 35/100
+775/776 [============================>.] - ETA: 0s - loss: 0.0562 - accuracy: 0.9797
+Epoch 00035: val_accuracy did not improve from 0.96154
+776/776 [==============================] - 65s 84ms/step - loss: 0.0562 - accuracy: 0.9797 - val_loss: 0.1419 - val_accuracy: 0.9608
+```
+**TensorBoard**
+
+![Alt text](https://user-images.githubusercontent.com/64162824/96126442-54bc6380-0f1e-11eb-961d-22d850dfe7db.PNG?raw=true "Epoch Accuracy")
+
+![Alt text](https://user-images.githubusercontent.com/64162824/96126496-584fea80-0f1e-11eb-86af-3a6b457882b1.PNG?raw=true "Epoch Loss")
+
+##### 'Simple CNN' Model Evaluation
+
+After training, evaluate our model with testing sets to figure out how well our model make predictions
+
+```markdown
+model_ = load_model('/content/drive/My Drive/Colab_Notebooks/weights3.h5')
+```
+Before we perform evaluation, load the best model & weights from training
+
+```markdown
+# Perform evaluation
+loss, accuracy = model_.evaluate(feature_test,label_test)
+f1score = f1_score(np.argmax(label_test, axis = 1), np.argmax(predictions, axis = 1), average="macro")
+precision = precision_score(np.argmax(label_test, axis = 1), np.argmax(predictions, axis = 1), average="macro")
+recall = recall_score(np.argmax(label_test, axis = 1), np.argmax(predictions, axis = 1), average="macro")
+
+# Result
+Loss : 0.055258918553590775 , Accuracy : 0.9807692170143127
+F1 Score : 0.9807692079825402
+Precision : 0.9807860931222381
+Recall : 0.9807959680222453
+```
+**Confusion Matrix**
+
+![Alt text](https://user-images.githubusercontent.com/64162824/96128062-0cea0c00-0f1f-11eb-8b71-31ee31f2115d.PNG?raw=true "Confusion Matrix")
+
+We also using Confusion Matrix to see our prediction from each class
+
+If we see the prediction result of 'Simple CNN' model with the testing set, we can say that is pretty good ! and even better from the more complex one
