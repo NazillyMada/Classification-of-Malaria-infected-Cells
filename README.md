@@ -146,8 +146,11 @@ SHAPE OF TRAINING LABELS : (24802, 2)
 SHAPE OF TESTING LABELS : (2756, 2)
 ```
 Training Image Data (feature_train) contain 24802 image data with shape (44,44,3)
+
 Testing Image Data (feature_test) contain 2756 image data with shape (44,44,3)
+
 Training Labels Data (label_train) contain 24802 labels data
+
 Testing Labels Data (label_test) contain 2756 labels data
 
 **THIS CODE BELOW IS OPTIONAL**
@@ -187,7 +190,7 @@ The goal is to be more efficient in loading data if it will be used in making si
 ### Making CNN models 
 In this research we use 2 models of CNN. to simplify, lets call it 'Complex CNN' and 'Simple CNN'.
 
-#### Complex CNN architecture
+#### 'Complex CNN' architecture
 ```markdown
 model= Sequential()
 
@@ -218,6 +221,8 @@ model.add(Dense(units=256,activation='relu'))
 model.add(Dense(units=256,activation='relu'))
 model.add(Dense(units=2, activation='softmax'))
 
+opt = SGD(lr=0.001, momentum=0.9)
+
 model.summary()
 ```
 This architecture consist of 3 blocks convolutional and 3 Dense layer.
@@ -231,6 +236,8 @@ Third block consist of 2 conv_layer and 1 Activation Layer (ReLU)
 BatchNormalization Layer and Dropout is used in the end of every layers
 
 And have 3 Dense/Fully Connected Layer. 2 Dense layers contain 256 neurons with 'ReLU' activations, the last layer for classification contain 2 neurons with 'Softmax' acivations
+
+then, for Optimizer we use SGD with learing rate = 0.001 and momentum = 0.09
 
 Below the summary of 'Complex CNN' architecture
 ```markdown
@@ -286,12 +293,133 @@ Total params: 1,569,058
 Trainable params: 1,568,354
 Non-trainable params: 704
 ```
+#### Train thr 'Complex CNN'
+```markdown
+filepath='weights.h5'
+my_callbacks = [
+                tf.keras.callbacks.EarlyStopping(monitor='val_accuracy',patience =10),
+                tf.keras.callbacks.ModelCheckpoint(filepath , monitor='val_accuracy',verbose=1,save_best_only=True),
+]
 
+logdir = os.path.join("logs1", datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+my_callbacks.append(TensorBoard(logdir, histogram_freq=1))
 
+print(my_callbacks)
+```
+Before we train the 'Complex CNN' models, we setting up some callbacks. Such us Checkpoint, EarlyStopping, and Tensorboard.
 
+Checkpoint used to save the model in several epoch with increased val_accuracy
 
+EarlyStopping used to stop the training if there is no improvement of val_accuracy from 10 epoch in a row
 
+TensorBoard is used to see the graphics of loss,accuracy,val_accuracy, val_loss during training process
 
+```markdown
+model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
+history = model.fit(feature_train,label_train, validation_data=(feature_test,label_test), callbacks = my_callbacks, epochs=100,verbose=1)
+```
+Then we can compile the model and fit for training.
+
+```markdown
+# 3 first epoch
+Epoch 1/100
+  1/776 [..............................] - ETA: 10s - loss: 0.8452 - accuracy: 0.6250
+776/776 [==============================] - ETA: 0s - loss: 0.6181 - accuracy: 0.6620
+Epoch 00001: val_accuracy improved from -inf to 0.67925, saving model to weights3.h5
+776/776 [==============================] - 173s 223ms/step - loss: 0.6181 - accuracy: 0.6620 - val_loss: 0.5952 - val_accuracy: 0.6792
+Epoch 2/100
+776/776 [==============================] - ETA: 0s - loss: 0.5365 - accuracy: 0.7313
+Epoch 00002: val_accuracy improved from 0.67925 to 0.73948, saving model to weights3.h5
+776/776 [==============================] - 163s 210ms/step - loss: 0.5365 - accuracy: 0.7313 - val_loss: 0.5216 - val_accuracy: 0.7395
+Epoch 3/100
+775/776 [============================>.] - ETA: 0s - loss: 0.4542 - accuracy: 0.7843
+Epoch 00003: val_accuracy did not improve from 0.73948
+776/776 [==============================] - 161s 208ms/step - loss: 0.4542 - accuracy: 0.7843 - val_loss: 1.0927 - val_accuracy: 0.5112
+
+.......
+# Best Epoch
+Epoch 18/100
+775/776 [============================>.] - ETA: 0s - loss: 0.1188 - accuracy: 0.9571
+Epoch 00018: val_accuracy improved from 0.95864 to 0.95936, saving model to weights3.h5
+776/776 [==============================] - 154s 199ms/step - loss: 0.1188 - accuracy: 0.9571 - val_loss: 0.1293 - val_accuracy: 0.9594
+
+# 3 Last Epoch
+Epoch 26/100
+775/776 [============================>.] - ETA: 0s - loss: 0.0914 - accuracy: 0.9661
+Epoch 00026: val_accuracy did not improve from 0.95936
+776/776 [==============================] - 155s 199ms/step - loss: 0.0914 - accuracy: 0.9661 - val_loss: 0.1499 - val_accuracy: 0.9539
+Epoch 27/100
+775/776 [============================>.] - ETA: 0s - loss: 0.0818 - accuracy: 0.9704
+Epoch 00027: val_accuracy did not improve from 0.95936
+776/776 [==============================] - 154s 199ms/step - loss: 0.0818 - accuracy: 0.9704 - val_loss: 0.1707 - val_accuracy: 0.9546
+Epoch 28/100
+775/776 [============================>.] - ETA: 0s - loss: 0.0764 - accuracy: 0.9725
+Epoch 00028: val_accuracy did not improve from 0.95936
+776/776 [==============================] - 157s 202ms/step - loss: 0.0764 - accuracy: 0.9725 - val_loss: 0.1290 - val_accuracy: 0.9565
+```
+
+**TensorBoard**
+
+![Alt text](https://user-images.githubusercontent.com/64162824/96118966-7ade0580-0f16-11eb-927e-639c167790c3.PNG?raw=true "Epoch Accuracy")
+
+![Alt text](https://user-images.githubusercontent.com/64162824/96118977-7f0a2300-0f16-11eb-8547-96a3d0a51641.PNG?raw=true "Epoch Loss")
+
+#### 'Complex CNN' Model Evaluation
+
+After training, evaluate our model with testing sets to figure out how well our model make predictions
+
+```markdown
+model_ = load_model('/content/drive/My Drive/Colab_Notebooks/weights.h5')
+```
+Before we perform evaluation, load the best model & weights from training
+
+```markdown
+loss, accuracy = model_.evaluate(feature_test,label_test)
+f1score = f1_score(np.argmax(label_test, axis = 1), np.argmax(predictions, axis = 1), average="macro")
+precision = precision_score(np.argmax(label_test, axis = 1), np.argmax(predictions, axis = 1), average="macro")
+recall = recall_score(np.argmax(label_test, axis = 1), np.argmax(predictions, axis = 1), average="macro")
+
+Loss : 0.0788116306066513 , Accuracy : 0.9735123515129089
+F1 Score : 0.9735122495379178
+Precision : 0.9735818698435521
+Recall : 0.9735556819498425
+
+```
+**Confusion Matrix**
+
+```markdown
+def plot_confusion_matrix(cm,classes,normalize=False, title='Confusion Matrix', cmap=plt.cm.Blues):
+  plt.imshow(cm,interpolation='nearest',cmap=cmap)
+  plt.title(title)
+  plt.colorbar()
+  tick_marks = np.arange(len(classes))
+  plt.xticks(tick_marks, classes, rotation=45)
+  plt.yticks(tick_marks, classes)
+
+  if normalize:
+    cm = cm.astype('float')/cm.sum(axis=1)[:, np.newaxis]
+    print("normalized confusion matrix")
+  else:
+    print("Confusion Matrix")
+  
+  print(cm)
+  thresh = cm.max()/2.
+  for i,j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+    plt.text(j, i, cm[i,j], horizontalalignment="center",color="white" if cm[i,j]>thresh else "black")
+  
+
+  plt.tight_layout()
+  plt.ylabel('True Label')
+  plt.xlabel('Predicted Label')
+
+cm = confusion_matrix(np.argmax(label_test, axis = 1), np.argmax(predictions, axis = 1))
+cm_plot_labels = ['Uninfected','Parasitized']
+plot_confusion_matrix(cm=cm, classes=cm_plot_labels,title='Confusion Matrix')
+```
+
+![Alt text](https://user-images.githubusercontent.com/64162824/96121318-1d4bb800-0f1a-11eb-985f-669072cd0925.PNG?raw=true "Confusion Matrix")
+
+If we see the prediction result of 'Complex CNN' model with the testing set, we can say that is pretty good !
 
 
 
