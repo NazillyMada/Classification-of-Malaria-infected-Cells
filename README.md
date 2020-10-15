@@ -592,4 +592,4 @@ Recall : 0.9807959680222453
 
 We also using Confusion Matrix to see our prediction from each class
 
-If we see the prediction result of 'Simple CNN' model with the testing set, we can say that is pretty good ! and even better from the more complex one
+If we see the prediction result of 'Simple CNN' model with the testing set, we can say that is pretty good ! and even better than the more complex one
