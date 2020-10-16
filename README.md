@@ -1,3 +1,5 @@
+# Github Pages : https://nazillymada.github.io/Classification-of-Malaria-infected-Cells/
+
 # 2 CNN Models for Classification Malaria-infected Cells Using Tensorflow Keras
 
 ## The Datasets
